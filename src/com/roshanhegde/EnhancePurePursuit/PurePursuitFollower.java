@@ -45,8 +45,8 @@ public class PurePursuitFollower {
         gc.translate(x, y);
         gc.rotate(rot);
         gc.strokeRect(0 - robowidth/2, 0 - robowidth/2, robowidth, robowidth );
-        gc.strokeOval(0 - robowidth/2, 0 - robowidth/2, lookahead*2, lookahead*2 );
-        gc.strokeOval(0 - robowidth/2, 0 - robowidth/2, prediction*2, prediction*2 );
+        gc.strokeOval(0-lookahead, 0-lookahead, lookahead*2, lookahead*2 );
+        gc.strokeOval(0 - prediction, 0 - prediction, prediction*2, prediction*2 );
         gc.restore();
     }
 
