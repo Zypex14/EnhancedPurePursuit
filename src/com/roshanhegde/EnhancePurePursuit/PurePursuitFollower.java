@@ -7,7 +7,7 @@ import java.util.List;
 
 public class PurePursuitFollower {
 
-    public Path<Point> path = new Path<>();
+    public Path<Point> path = new Path<>(Point::new);
     public double forwardVel = 0;
     public double strafeVel = 0;
     public double lookahead = 100;
@@ -40,7 +40,7 @@ public class PurePursuitFollower {
 //        for dimensions
     }
 
-    public class Point extends RMath.Point {
+    public static class Point extends RMath.Point {
         Double speed;
         Double turnSpeed;
         Double lookahead;
@@ -80,7 +80,7 @@ public class PurePursuitFollower {
 
     }
 
-    public class Action{
+    public static class Action{
         public boolean interrupting = false;
         public Double tolerance;
         public Double rotationTolerance;
