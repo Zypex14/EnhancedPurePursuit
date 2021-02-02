@@ -40,17 +40,24 @@ public class Main extends Application {
                 }
         );
 
+
         mainLoop.getKeyFrames().add(kf);
         mainLoop.play();
 
-        primaryStage.setScene(new Scene(root, initialWidth, initialHeight));
+        Scene scene = new Scene(root, initialWidth, initialHeight);
+
+//        Listeners to update the canvas dimensions as the window is resized
+        scene.widthProperty().addListener((observableValue, oldSceneWidth, newSceneWidth) -> canvas.setWidth((double) newSceneWidth));
+        scene.heightProperty().addListener((observableValue, oldSceneHeight, newSceneHeight) -> canvas.setHeight((double) newSceneHeight));
+
+        primaryStage.setScene(scene);
         primaryStage.show();
 
         onInit();
     }
 
     private void onInit() {
-        path = new Path<>();
+        path = new Path<>(PurePursuitFollower.Point::new);
         path.addPoint(0, 0).setLookahead(100d).setPrediction(20d);
         path.addPoint(100, 0).setSpeed(4d);
         path.addPoint(0, 100)
@@ -61,10 +68,8 @@ public class Main extends Application {
     }
 
     private void onUpdate() {
-        final double w = gc.getCanvas().getHeight();
-        final double h = gc.getCanvas().getWidth();
-
-        System.out.println("height: " + h);
+        final double w = gc.getCanvas().getWidth();
+        final double h = gc.getCanvas().getHeight();
 
         path.draw(gc);
     }

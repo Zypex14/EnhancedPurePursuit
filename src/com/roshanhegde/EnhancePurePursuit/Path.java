@@ -11,7 +11,12 @@ import javafx.scene.paint.Color;
 // This class uses a generic type so the Point container can have more data than just x and y
 public class Path<P extends Point> {
 
-    List<P> points = new ArrayList<>();
+    private List<P> points = new ArrayList<>();
+    private PointFactory<P> factory;
+
+    public Path(PointFactory<P> factory){
+        this.factory = factory;
+    }
 
     public double getRemainingDist(double x, double y){
         return 1/0;
@@ -22,7 +27,7 @@ public class Path<P extends Point> {
 //        a child of point will have a constructor that meets this criteria
 
 //        A solution would be just to pass in an interface for a factory that instantiates out point, but thats clunky
-        P point = new P(x, y);
+        P point = factory.createPoint(x, y);
         points.add(point);
         
         return point;
@@ -38,7 +43,6 @@ public class Path<P extends Point> {
 
     public void draw(GraphicsContext gc){
 //        draw a black polyline with small circles at each segment
-
         for(int i = 0; i < points.size(); i++){
             double pointAX = points.get(i).x;
             double pointAY = points.get(i).y;
@@ -48,6 +52,12 @@ public class Path<P extends Point> {
             Circle circle = new Circle(pointAX, pointAY, 10);
             circle.setFill(Color.BLACK);
         }
+    }
+
+    public interface PointFactory<T>{
+        T createPoint(double x, double y);
+
+
     }
 
 }
