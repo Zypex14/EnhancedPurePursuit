@@ -66,12 +66,12 @@ public class Path<P extends Point> {
         int size = points.size();
         double[] xValues = new double[size];
         double[] yValues = new double[size];
-        System.out.println(points.size());
+        //System.out.println(points.size());
         for(int i = 0; i < points.size(); i++){
-            xValues[i] = points.get(i).x+ 300;
-            yValues[i] = points.get(i).y+ 300;
-            System.out.println("Added Point :" + i);
-            gc.fillOval(points.get(i).x + 300, points.get(i).y+ 300, 10, 10);
+            xValues[i] = points.get(i).x;
+            yValues[i] = points.get(i).y;
+            //System.out.println("Added Point :" + i);
+            gc.fillOval(points.get(i).x, points.get(i).y, 10, 10);
 
         }
         gc.strokePolyline(xValues, yValues, 4);
