@@ -4,14 +4,10 @@ import RMath.Point;
 import RMath.Segment;
 import RMath.Util;
 import javafx.scene.canvas.GraphicsContext;
-
 import javafx.scene.shape.*;
-
-
-
 import java.util.ArrayList;
 import java.util.List;
-
+import javafx.scene.paint.Color;
 // This class uses a generic type so the Point container can have more data than just x and y
 public class Path<P extends Point> {
 
@@ -42,13 +38,15 @@ public class Path<P extends Point> {
 
     public void draw(GraphicsContext gc){
 //        draw a black polyline with small circles at each segment
-        //Line line = new Line();
+
         for(int i = 0; i < points.size(); i++){
             double pointAX = points.get(i).x;
             double pointAY = points.get(i).y;
             double pointBX = points.get(i+1).x;
             double pointBY = points.get(i+1).y;
             Line line = new Line(pointAX, pointAY, pointBX, pointBY);
+            Circle circle = new Circle(pointAX, pointAY, 10);
+            circle.setFill(Color.BLACK);
         }
     }
 
