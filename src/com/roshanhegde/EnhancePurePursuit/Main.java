@@ -65,13 +65,15 @@ public class Main extends Application {
                 .setInterrupting(true)
                 .setRotationTolerance(10d);
         path.addPoint(-100, 100);
+
     }
 
     private void onUpdate() {
         final double w = gc.getCanvas().getWidth();
         final double h = gc.getCanvas().getHeight();
-
         path.draw(gc);
+
+
     }
 
     public static void main(String[] args) {

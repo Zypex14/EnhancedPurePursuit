@@ -5,6 +5,8 @@ import RMath.Segment;
 import RMath.Util;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.*;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.paint.Color;
@@ -41,18 +43,42 @@ public class Path<P extends Point> {
         return new Segment(p1, p2);
     }
 
-    public void draw(GraphicsContext gc){
+    /*public void draw(GraphicsContext gc){
 //        draw a black polyline with small circles at each segment
+
         for(int i = 0; i < points.size(); i++){
             if( (i+1) > points.size()-1) return;
             double pointAX = points.get(i).x;
             double pointAY = points.get(i).y;
             double pointBX = points.get(i+1).x;
             double pointBY = points.get(i+1).y;
-            Line line = new Line(pointAX, pointAY, pointBX, pointBY);
-            Circle circle = new Circle(pointAX, pointAY, 10);
-            circle.setFill(Color.BLACK);
+            gc.setLineWidth(2);
+            gc.setStroke(Color.BLACK);
+            gc.strokeLine(pointAX+100, pointAY+100, pointBX+100, pointBY+100);
+
+            gc.lineTo(pointBX, pointBY);
+
+            gc.fillOval(pointAX, pointAY, 20, 20);
         }
+    }*/
+
+    public void draw(GraphicsContext gc){
+        int size = points.size();
+        double[] xValues = new double[size];
+        double[] yValues = new double[size];
+        System.out.println(points.size());
+        for(int i = 0; i < points.size(); i++){
+            xValues[i] = points.get(i).x+ 300;
+            yValues[i] = points.get(i).y+ 300;
+            System.out.println("Added Point :" + i);
+            gc.fillOval(points.get(i).x + 300, points.get(i).y+ 300, 10, 10);
+
+        }
+        gc.strokePolyline(xValues, yValues, 4);
+
+
+
+
     }
 
     public interface PointFactory<T>{
