@@ -43,24 +43,7 @@ public class Path<P extends Point> {
         return new Segment(p1, p2);
     }
 
-    /*public void draw(GraphicsContext gc){
-//        draw a black polyline with small circles at each segment
 
-        for(int i = 0; i < points.size(); i++){
-            if( (i+1) > points.size()-1) return;
-            double pointAX = points.get(i).x;
-            double pointAY = points.get(i).y;
-            double pointBX = points.get(i+1).x;
-            double pointBY = points.get(i+1).y;
-            gc.setLineWidth(2);
-            gc.setStroke(Color.BLACK);
-            gc.strokeLine(pointAX+100, pointAY+100, pointBX+100, pointBY+100);
-
-            gc.lineTo(pointBX, pointBY);
-
-            gc.fillOval(pointAX, pointAY, 20, 20);
-        }
-    }*/
 
     public void draw(GraphicsContext gc){
         int size = points.size();

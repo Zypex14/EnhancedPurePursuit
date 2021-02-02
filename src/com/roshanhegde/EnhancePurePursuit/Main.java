@@ -58,13 +58,13 @@ public class Main extends Application {
 
     private void onInit() {
         path = new Path<>(PurePursuitFollower.Point::new);
-        path.addPoint(0, 0).setLookahead(100d).setPrediction(20d);
-        path.addPoint(100, 0).setSpeed(4d);
-        path.addPoint(0, 100)
+        path.addPoint(20, 20).setLookahead(100d).setPrediction(20d);
+        path.addPoint(120, 20).setSpeed(4d);
+        path.addPoint(120, 120)
                 .addAction(() -> System.out.println("testing"))
                 .setInterrupting(true)
                 .setRotationTolerance(10d);
-        path.addPoint(-100, 100);
+        path.addPoint(20, 120);
 
     }
 
