@@ -32,12 +32,22 @@ public class PurePursuitFollower {
     }
 
     public void draw(GraphicsContext gc){
+        double robowidth = 10;
+        //temp
+        double rot = 0;
 //        call gc functions here
 //        square should point in direction of rotation of bot
 
 //        gc.getCanvas().getHeight()
 //        gc.getCanvas().getWidth()
 //        for dimensions
+        gc.save();
+        gc.translate(x, y);
+        gc.rotate(rot);
+        gc.strokeRect(0 - robowidth/2, 0 - robowidth/2, robowidth, robowidth );
+        gc.strokeOval(0 - robowidth/2, 0 - robowidth/2, lookahead*2, lookahead*2 );
+        gc.strokeOval(0 - robowidth/2, 0 - robowidth/2, prediction*2, prediction*2 );
+        gc.restore();
     }
 
     public class Point extends RMath.Point {
