@@ -46,6 +46,7 @@ public class Path<P extends Point> {
 
 
     public void draw(GraphicsContext gc){
+        double pointSize = 10;
         int size = points.size();
         double[] xValues = new double[size];
         double[] yValues = new double[size];
@@ -54,7 +55,7 @@ public class Path<P extends Point> {
             xValues[i] = points.get(i).x;
             yValues[i] = points.get(i).y;
             //System.out.println("Added Point :" + i);
-            gc.fillOval(points.get(i).x, points.get(i).y, 10, 10);
+            gc.fillOval(points.get(i).x - pointSize/2, points.get(i).y - pointSize/2, pointSize, pointSize);
 
         }
         gc.strokePolyline(xValues, yValues, 4);
