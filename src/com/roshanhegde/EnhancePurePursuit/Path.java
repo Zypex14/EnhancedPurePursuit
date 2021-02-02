@@ -44,6 +44,7 @@ public class Path<P extends Point> {
     public void draw(GraphicsContext gc){
 //        draw a black polyline with small circles at each segment
         for(int i = 0; i < points.size(); i++){
+            if( (i+1) > points.size()-1) return;
             double pointAX = points.get(i).x;
             double pointAY = points.get(i).y;
             double pointBX = points.get(i+1).x;
