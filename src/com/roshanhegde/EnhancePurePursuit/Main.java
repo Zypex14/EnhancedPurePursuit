@@ -21,6 +21,7 @@ public class Main extends Application {
     private final double initialHeight = 600;
     private final double initialWidth = 600;
     private Path<PurePursuitFollower.Point> path;
+   // private PurePursuitFollower bot = new PurePursuitFollower();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -65,6 +66,9 @@ public class Main extends Application {
                 .setInterrupting(true)
                 .setRotationTolerance(10d);
         path.addPoint(20, 120);
+//
+//        bot.x = 60;
+//        bot.y = 100;
 
     }
 
@@ -72,6 +76,14 @@ public class Main extends Application {
         final double w = gc.getCanvas().getWidth();
         final double h = gc.getCanvas().getHeight();
         path.draw(gc);
+//
+//        Point botPoint = new Point(bot.x, bot.y);
+//
+//        bot.draw(gc);
+//
+//        System.out.println(path.distToPoint(botPoint, 0, (point) -> point != null ));
+//
+
 
 
     }

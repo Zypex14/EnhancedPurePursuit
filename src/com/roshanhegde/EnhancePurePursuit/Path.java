@@ -20,16 +20,41 @@ public class Path<P extends Point> {
         this.factory = factory;
     }
 
-    public double getRemainingDist(Point follower, Segment s){
+    public double getRemainingDist(Point follower, int segIndex){
         double totalDist = 0;
+        Segment s = getSegment(segIndex);
 
         Point closest = follower.closestPoint(s);
         totalDist += RMath.Util.dist(follower, closest);
         totalDist += RMath.Util.dist(closest, s.getP2());
-        for (int i = 1; i < points.size() - 2; i++) {
+
+
+        for (int i = segIndex + 1; i < points.size() - 2; i++) {
             totalDist += getSegment(i).getLength();
         }
         return totalDist;
+    }
+
+    public double distToPoint(Point follower, int segIndex, PointChecker<P> checker){
+        double totalDist = 0;
+        Segment s = getSegment(segIndex);
+
+        Point closest = follower.closestPoint(s);
+        totalDist += RMath.Util.dist(follower, closest);
+        totalDist += RMath.Util.dist(closest, getSegment(segIndex).getP2());
+
+        if(checker.checkPoint(points.get(segIndex + 1))){
+            return totalDist;
+        }
+
+        for (int i = 1; i < points.size() - 2; i++) {
+            totalDist += getSegment(i).getLength();
+            if(checker.checkPoint(points.get(i + 1))){
+                return totalDist;
+            }
+        }
+        return 0;
+
 
     }
 
@@ -40,7 +65,7 @@ public class Path<P extends Point> {
 //        A solution would be just to pass in an interface for a factory that instantiates out point, but thats clunky
         P point = factory.createPoint(x, y);
         points.add(point);
-        
+
         return point;
     }
 
@@ -78,6 +103,10 @@ public class Path<P extends Point> {
         T createPoint(double x, double y);
 
 
+    }
+
+    public interface PointChecker<T>{
+        boolean checkPoint(T point);
     }
 
 }
