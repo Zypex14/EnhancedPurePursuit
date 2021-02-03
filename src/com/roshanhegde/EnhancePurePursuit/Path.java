@@ -20,8 +20,17 @@ public class Path<P extends Point> {
         this.factory = factory;
     }
 
-    public double getRemainingDist(int currentSegment, double x, double y){
-        return 1/0;
+    public double getRemainingDist(Point follower, Segment s){
+        double totalDist = 0;
+
+        Point closest = follower.closestPoint(s);
+        totalDist += RMath.Util.dist(follower, closest);
+        totalDist += RMath.Util.dist(closest, s.getP2());
+        for (int i = 1; i < points.size() - 2; i++) {
+            totalDist += getSegment(i).getLength();
+        }
+        return totalDist;
+
     }
 
     public List<P> getPoints(){
@@ -68,18 +77,17 @@ public class Path<P extends Point> {
             gc.fillOval(points.get(i).x - pointSize/2, points.get(i).y - pointSize/2, pointSize, pointSize);
 
         }
-        gc.strokePolyline(xValues, yValues, size);
-    }
+        gc.strokePolyline(xValues, yValues, 4);
 
-    public boolean checkPoint(PointChecker<P> checker, P point){
-        return checker.checkPoint(point);
+
+
+
     }
 
     public interface PointFactory<T>{
         T createPoint(double x, double y);
+
+
     }
 
-    public interface PointChecker<T>{
-        boolean checkPoint(T point);
-    }
 }
