@@ -76,4 +76,12 @@ public class Vector {
     public Segment toSegment(Point start){
         return new Segment(start, toPoint());
     }
+
+    public static Vector rect(double x, double y){
+        return new Vector(new Point(x, y));
+    }
+
+    public static Vector polar(double r, double theta){
+        return new Vector(new PolarPoint(r, theta));
+    }
 }

@@ -147,9 +147,7 @@ public class Util {
         }
 
         if(Double.isNaN(y2)){
-            return new Point[]{
-                    new Point(Double.NaN, Double.NaN)
-            };
+            return new Point[0];
         }
 
         return new Point[]{
@@ -174,12 +172,13 @@ public class Util {
             out[j] = temp.get(j);
 
         if(temp.size() == 0)
-            return new Point[]{new Point(Double.NaN, Double.NaN)};
+            return new Point[0];
 
 
         return out;
     }
-    public static Point[] getIntersection (Segment s, Circle c){
+
+    public static Point[] getIntersection(Segment s, Circle c){
         return getIntersection(c, s);
     }
 

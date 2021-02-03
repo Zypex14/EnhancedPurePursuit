@@ -20,8 +20,12 @@ public class Path<P extends Point> {
         this.factory = factory;
     }
 
-    public double getRemainingDist(double x, double y){
+    public double getRemainingDist(int currentSegment, double x, double y){
         return 1/0;
+    }
+
+    public List<P> getPoints(){
+        return points;
     }
 
     public P addPoint(double x, double y){
@@ -43,7 +47,13 @@ public class Path<P extends Point> {
         return new Segment(p1, p2);
     }
 
-
+    public List<Segment> toSegments(){
+        List<Segment> out = new ArrayList<>();
+        for(int i = 0; i < points.size() - 1; i++){
+            out.add(new Segment(points.get(i), points.get(i + 1)));
+        }
+        return out;
+    }
 
     public void draw(GraphicsContext gc){
         double pointSize = 10;
@@ -58,17 +68,18 @@ public class Path<P extends Point> {
             gc.fillOval(points.get(i).x - pointSize/2, points.get(i).y - pointSize/2, pointSize, pointSize);
 
         }
-        gc.strokePolyline(xValues, yValues, 4);
+        gc.strokePolyline(xValues, yValues, size);
+    }
 
-
-
-
+    public boolean checkPoint(PointChecker<P> checker, P point){
+        return checker.checkPoint(point);
     }
 
     public interface PointFactory<T>{
         T createPoint(double x, double y);
-
-
     }
 
+    public interface PointChecker<T>{
+        boolean checkPoint(T point);
+    }
 }
