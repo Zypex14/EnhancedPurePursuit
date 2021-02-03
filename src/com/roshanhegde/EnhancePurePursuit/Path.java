@@ -58,6 +58,10 @@ public class Path<P extends Point> {
 
     }
 
+    public List<P> getPoints(){
+        return points;
+    }
+
     public P addPoint(double x, double y){
 //        this is a problem here because I want to initialize the point, but its not guaranteed that
 //        a child of point will have a constructor that meets this criteria
@@ -77,7 +81,13 @@ public class Path<P extends Point> {
         return new Segment(p1, p2);
     }
 
-
+    public List<Segment> toSegments(){
+        List<Segment> out = new ArrayList<>();
+        for(int i = 0; i < points.size() - 1; i++){
+            out.add(new Segment(points.get(i), points.get(i + 1)));
+        }
+        return out;
+    }
 
     public void draw(GraphicsContext gc){
         double pointSize = 10;

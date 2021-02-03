@@ -21,6 +21,8 @@ public class Main extends Application {
     private final double initialHeight = 600;
     private final double initialWidth = 600;
     private Path<PurePursuitFollower.Point> path;
+    private PurePursuitFollower robot;
+    private Point mousePos = new Point(0, 0);
    // private PurePursuitFollower bot = new PurePursuitFollower();
 
     @Override
@@ -31,6 +33,7 @@ public class Main extends Application {
         Group root = new Group(canvas);
 
         gc = canvas.getGraphicsContext2D();
+        gc.setImageSmoothing(true);
 
         Timeline mainLoop = new Timeline();
         mainLoop.setCycleCount(Timeline.INDEFINITE);
@@ -51,6 +54,11 @@ public class Main extends Application {
         scene.widthProperty().addListener((observableValue, oldSceneWidth, newSceneWidth) -> canvas.setWidth((double) newSceneWidth));
         scene.heightProperty().addListener((observableValue, oldSceneHeight, newSceneHeight) -> canvas.setHeight((double) newSceneHeight));
 
+        scene.setOnMouseMoved(mouseEvent -> {
+            mousePos.x = mouseEvent.getX();
+            mousePos.y = mouseEvent.getY();
+        });
+
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -59,22 +67,26 @@ public class Main extends Application {
 
     private void onInit() {
         path = new Path<>(PurePursuitFollower.Point::new);
-        path.addPoint(20, 20).setLookahead(100d).setPrediction(20d);
-        path.addPoint(120, 20).setSpeed(4d);
-        path.addPoint(120, 120)
+        path.addPoint(100, 100).setLookahead(100d).setPrediction(20d);
+        path.addPoint(300, 100).setSpeed(4d);
+        path.addPoint(500, 300)
                 .addAction(() -> System.out.println("testing"))
                 .setInterrupting(true)
                 .setRotationTolerance(10d);
-        path.addPoint(20, 120);
-//
-//        bot.x = 60;
-//        bot.y = 100;
+        path.addPoint(100, 500);
 
+        robot = new PurePursuitFollower();
+        robot.followPath(path);
+
+        path.checkPoint((point) -> point != null, new PurePursuitFollower.Point(0, 0));
     }
 
     private void onUpdate() {
         final double w = gc.getCanvas().getWidth();
         final double h = gc.getCanvas().getHeight();
+
+        gc.clearRect(0, 0, w, h);
+
         path.draw(gc);
 //
 //        Point botPoint = new Point(bot.x, bot.y);
@@ -85,7 +97,9 @@ public class Main extends Application {
 //
 
 
-
+        robot.draw(gc);
+        robot.x = mousePos.x;
+        robot.y = mousePos.y;
     }
 
     public static void main(String[] args) {
