@@ -21,12 +21,12 @@ public class PurePursuitFollower {
     private int currentSegment = 0;
 
     public double tolerance = 10;
-
 //    Degrees
     public double rotationTolerance = 10;
 
     public double x = 0;
     public double y = 0;
+    public double rot = 0;
 
     public void followPath(Path<Point> path) {
         this.path = path;
@@ -81,7 +81,7 @@ public class PurePursuitFollower {
         if (num + currentSegment - 1 >= path.getPoints().size()) {
             predictionPoint = path.getPoints().get(path.getPoints().size() - 1);
         } else {
-            Segment segment = path.getSegment(num + currentSegment);
+            Segment segment = path.getSegment(num + currentSegment - 1);
             RMath.Point[] predictionIntersections = Util.getIntersection(new Circle(x, y, lookahead + prediction), segment);
             if (predictionIntersections.length == 0)
                 return lookaheadPoint;
@@ -95,10 +95,13 @@ public class PurePursuitFollower {
             }
         }
 
-        total.x += (lastPoint.x - predictionPoint.x) / 2;
-        total.y += (lastPoint.y - predictionPoint.y) / 2;
+        System.out.println("Segments averaged: " + num);
 
-        RMath.Point followPoint = new Point(lastPoint.x / num, lastPoint.y / num);
+        total.x += (lastPoint.x + predictionPoint.x) / 2;
+        total.y += (lastPoint.y + predictionPoint.y) / 2;
+
+        RMath.Point followPoint = new Point(total.x / num, total.y / num);
+        System.out.println("Follow Point: " + followPoint);
         return followPoint;
     }
 
@@ -134,30 +137,24 @@ public class PurePursuitFollower {
     public void manageActions(){
         Point nextPoint = path.getPoints().get(currentSegment + 1);
         Action action = nextPoint.actions.get(0);
-        if(Math.abs(getAngleDiff(nextPoint.rot, action.rotationTolerance)) > 0){
+        RMath.Point position = new RMath.Point(x, y);
+
+        boolean withinTolerance = action.tolerance == null || Util.dist(position, nextPoint) < action.tolerance;
+        boolean withinRotTolerance = action.rotationTolerance == null || nextPoint.rot == null || Math.abs(getAngleDiff(rot, nextPoint.rot)) < action.rotationTolerance;
+
+        if(withinTolerance && withinRotTolerance){
             if(!action.interrupting){
                 new Thread(action::run).start();
                 nextPoint.actions.remove(0);
             }
             else{
-                if(!action.running){
-                    action.running = true;
+                if(!action.started){
                     new Thread(action::run).start();
-                    //Needs to wait for thread to complete or be started a different way
-                    action.running = false;
-                    if(action.running = false){
-                        nextPoint.actions.remove(0);
-                    }
+                }else if(action.started && !action.running){ // if the thread has finished
+                    nextPoint.actions.remove(0);
                 }
             }
         }
-
-
-
-
-
-
-
     }
 
 
@@ -177,15 +174,18 @@ public class PurePursuitFollower {
     }
 
     public boolean isStoppingPoint(Point p){
-        if(Math.abs(getAngleDiff(p.rot, rotation)) < rotationTolerance){
-            for(Action a : p.actions) {
-               if (a.interrupting){
-                   return true;
-               }
+
+        boolean needsRotation = p.rot != null && Math.abs(getAngleDiff(p.rot, rotation)) >= rotationTolerance;
+        boolean needsAction = false;
+
+        for(Action a : p.actions) {
+            if (a.interrupting){
+                needsAction = true;
+                break;
             }
-            return false;
         }
-        return false;
+
+        return needsRotation || needsAction;
     }
 
     public void draw(GraphicsContext gc) {
@@ -316,9 +316,7 @@ public class PurePursuitFollower {
         public void run(){
             running = true;
             started = true;
-
             action.run();
-
             running = false;
         }
 

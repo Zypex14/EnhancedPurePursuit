@@ -41,28 +41,61 @@ public class Vector {
         return theta;
     }
 
-    public void setX(double x) {
+    public Vector setX(double x) {
         this.x = x;
         this.r = Util.dist(x, y);
         this.theta = Util.angle(x, y);
+
+        return this;
     }
 
-    public void setY(double y) {
+    public Vector setY(double y) {
         this.y = y;
         this.r = Util.dist(x, y);
         this.theta = Util.angle(x, y);
+
+        return this;
     }
 
-    public void setMagnitude(double r) {
+    public Vector setMagnitude(double r) {
         this.r = r;
         this.x = r * Math.cos(theta);
         this.y = r * Math.sin(theta);
+
+        return this;
     }
 
-    public void setTheta(double theta) {
+    public Vector setTheta(double theta) {
         this.theta = theta;
         this.x = r * Math.cos(theta);
         this.y = r * Math.sin(theta);
+
+        return this;
+    }
+
+    public Vector add(Vector other){
+        x += other.x;
+        y += other.y;
+
+        return this;
+    }
+
+    public Vector subtract(Vector other){
+        x -= other.x;
+        y -= other.y;
+
+        return this;
+    }
+
+    public Vector scale(double scale){
+        this.x *= scale;
+        this.y *= scale;
+
+        return this;
+    }
+
+    public Vector normalize(){
+        return scale(1 / getMagnitude());
     }
 
     public Point toPoint(){

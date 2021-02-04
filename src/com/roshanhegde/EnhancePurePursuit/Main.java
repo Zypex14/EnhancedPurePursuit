@@ -82,7 +82,7 @@ public class Main extends Application {
         final double w = gc.getCanvas().getWidth();
         final double h = gc.getCanvas().getHeight();
 
-        gc.clearRect(0, 0, w, h);
+//        gc.clearRect(0, 0, w, h);
 
         path.draw(gc);
         robot.draw(gc);
