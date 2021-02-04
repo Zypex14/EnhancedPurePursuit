@@ -111,11 +111,7 @@ public class PurePursuitFollower {
 //        robot is within lookahead
 //        robot is completed with any interrupting actions
 
-//        if there is an action:
-//          if its thread:
-//              start it and delete it
-//          if its not:
-//              start it, wait for it to finish, then delete it
+//
 
 //        get the follow point
 //        get the speed
@@ -128,6 +124,35 @@ public class PurePursuitFollower {
 //        global.setTheta();
 
     }
+
+    public void manageActions(){
+        Point nextPoint = path.getPoints().get(currentSegment + 1);
+        Action action = nextPoint.actions.get(0);
+        if( action != null){
+            if(!action.interrupting){
+                new Thread(action::run).start();
+                nextPoint.actions.remove(0);
+            }
+            else{
+                if(!action.running){
+                    action.running = true;
+                    action.run();
+                    action.running = false;
+                    if(action.running = false){
+                        nextPoint.actions.remove(0);
+                    }
+                }
+            }
+        }
+
+
+
+
+
+
+
+    }
+
 
     public double getRotation(){
 //        get dist till rotation point

@@ -10,6 +10,9 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.paint.Color;
+
+import javax.swing.*;
+
 // This class uses a generic type so the Point container can have more data than just x and y
 public class Path<P extends Point> {
 
@@ -88,6 +91,7 @@ public class Path<P extends Point> {
         }
         return out;
     }
+
 
     public void draw(GraphicsContext gc){
         double pointSize = 5;
