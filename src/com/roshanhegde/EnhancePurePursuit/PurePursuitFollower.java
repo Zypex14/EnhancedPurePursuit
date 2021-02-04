@@ -17,6 +17,7 @@ public class PurePursuitFollower {
     public double strafeVel = 0;
     public double lookahead = 100;
     public double prediction = 40;
+    public double rotation = 0;
     private int currentSegment = 0;
 
     public double tolerance = 10;
@@ -175,8 +176,14 @@ public class PurePursuitFollower {
     }
 
     public boolean isStoppingPoint(Point p){
-//        Check if rotation is within rotation tolerance,
-//        Check if point has any remaining interrupting actions
+        if(Math.abs(getAngleDiff(p.rot, rotation)) < rotationTolerance){
+            for(Action a : p.actions) {
+               if (a.interrupting){
+                   return true;
+               }
+            }
+            return false;
+        }
         return false;
     }
 
