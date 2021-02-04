@@ -133,7 +133,7 @@ public class PurePursuitFollower {
     public void manageActions(){
         Point nextPoint = path.getPoints().get(currentSegment + 1);
         Action action = nextPoint.actions.get(0);
-        if( action != null){
+        if(Math.abs(getAngleDiff(nextPoint.rot, action.rotationTolerance)) > 0){
             if(!action.interrupting){
                 new Thread(action::run).start();
                 nextPoint.actions.remove(0);
@@ -141,7 +141,8 @@ public class PurePursuitFollower {
             else{
                 if(!action.running){
                     action.running = true;
-                    action.run();
+                    new Thread(action::run).start();
+                    //Needs to wait for thread to complete or be started a different way
                     action.running = false;
                     if(action.running = false){
                         nextPoint.actions.remove(0);
