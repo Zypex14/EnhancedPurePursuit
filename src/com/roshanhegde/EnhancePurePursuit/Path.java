@@ -90,10 +90,11 @@ public class Path<P extends Point> {
     }
 
     public void draw(GraphicsContext gc){
-        double pointSize = 10;
+        double pointSize = 5;
         int size = points.size();
         double[] xValues = new double[size];
         double[] yValues = new double[size];
+        gc.setFill(Color.BLACK);
         //System.out.println(points.size());
         for(int i = 0; i < points.size(); i++){
             xValues[i] = points.get(i).x;
@@ -102,17 +103,12 @@ public class Path<P extends Point> {
             gc.fillOval(points.get(i).x - pointSize/2, points.get(i).y - pointSize/2, pointSize, pointSize);
 
         }
-        gc.strokePolyline(xValues, yValues, 4);
-
-
-
+        gc.strokePolyline(xValues, yValues, size);
 
     }
 
     public interface PointFactory<T>{
         T createPoint(double x, double y);
-
-
     }
 
     public interface PointChecker<T>{

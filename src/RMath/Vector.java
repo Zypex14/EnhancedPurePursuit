@@ -21,6 +21,10 @@ public class Vector {
         y = r * Math.sin(theta);
     }
 
+    public Vector clone(){
+        return new Vector(new Point(x, y));
+    }
+
     public double getX() {
         return x;
     }

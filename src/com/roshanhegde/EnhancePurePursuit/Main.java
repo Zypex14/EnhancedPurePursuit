@@ -9,9 +9,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -68,7 +65,7 @@ public class Main extends Application {
     private void onInit() {
         path = new Path<>(PurePursuitFollower.Point::new);
         path.addPoint(100, 100).setLookahead(100d).setPrediction(20d);
-        path.addPoint(300, 100).setSpeed(4d);
+        path.addPoint(160, 100).setSpeed(4d);
         path.addPoint(500, 300)
                 .addAction(() -> System.out.println("testing"))
                 .setInterrupting(true)
@@ -76,9 +73,9 @@ public class Main extends Application {
         path.addPoint(100, 500);
 
         robot = new PurePursuitFollower();
+        robot.lookahead = 50;
         robot.followPath(path);
 
-        path.checkPoint((point) -> point != null, new PurePursuitFollower.Point(0, 0));
     }
 
     private void onUpdate() {
@@ -88,16 +85,8 @@ public class Main extends Application {
         gc.clearRect(0, 0, w, h);
 
         path.draw(gc);
-//
-//        Point botPoint = new Point(bot.x, bot.y);
-//
-//        bot.draw(gc);
-//
-//        System.out.println(path.distToPoint(botPoint, 0, (point) -> point != null ));
-//
-
-
         robot.draw(gc);
+
         robot.x = mousePos.x;
         robot.y = mousePos.y;
     }
