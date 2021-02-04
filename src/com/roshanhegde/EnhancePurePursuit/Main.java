@@ -65,7 +65,7 @@ public class Main extends Application {
     private void onInit() {
         path = new Path<>(PurePursuitFollower.Point::new);
         path.addPoint(100, 100).setLookahead(100d).setPrediction(20d);
-        path.addPoint(160, 100).setSpeed(4d);
+        path.addPoint(300, 100).setSpeed(4d);
         path.addPoint(500, 300)
                 .addAction(() -> System.out.println("testing"))
                 .setInterrupting(true)
