@@ -19,6 +19,11 @@ public class PurePursuitFollower {
     public double prediction = 40;
     private int currentSegment = 0;
 
+    public double tolerance = 10;
+
+//    Degrees
+    public double rotationTolerance = 10;
+
     public double x = 0;
     public double y = 0;
 
@@ -174,6 +179,27 @@ public class PurePursuitFollower {
         gc.setFill(Color.GREEN);
         RMath.Point followPoint = getFollowPoint();
         gc.fillOval(followPoint.x - 5, followPoint.y - 5, 10, 10);
+    }
+
+    /**
+     * @param a1 the first angle
+     * @param a2 the second angle
+     * @return the shortest interval between the two angles
+     */
+    private double getAngleDiff(double a1, double a2) {
+        a1 = Util.loop(a1, 0, 360);
+        a2 = Util.loop(a2, 0, 360);
+
+        double dist = a1 - a2;
+        double shortest;
+        if (Math.abs(dist) < 180)
+            shortest = dist;
+        else {
+            if (dist > 0) shortest = dist - 360;
+            else shortest = dist + 360;
+        }
+
+        return shortest;
     }
 
     public static class Point extends RMath.Point {
