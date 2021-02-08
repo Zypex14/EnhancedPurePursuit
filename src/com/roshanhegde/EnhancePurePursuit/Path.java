@@ -23,6 +23,10 @@ public class Path<P extends Point> {
         this.factory = factory;
     }
 
+    public double size(){
+        return points.size();
+    }
+
     public double getRemainingDist(Point follower, int segIndex){
         double totalDist = 0;
         Segment s = getSegment(segIndex);

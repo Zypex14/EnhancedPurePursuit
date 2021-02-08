@@ -74,22 +74,22 @@ public class Vector {
     }
 
     public Vector add(Vector other){
-        x += other.x;
-        y += other.y;
+        setX(x + other.x);
+        setY(y + other.y);
 
         return this;
     }
 
     public Vector subtract(Vector other){
-        x -= other.x;
-        y -= other.y;
+        setX(x - other.x);
+        setY(y - other.y);
 
         return this;
     }
 
     public Vector scale(double scale){
-        this.x *= scale;
-        this.y *= scale;
+        setX(x * scale);
+        setY(y * scale);
 
         return this;
     }

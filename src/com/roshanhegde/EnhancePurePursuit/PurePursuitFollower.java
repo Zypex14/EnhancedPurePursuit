@@ -17,8 +17,8 @@ public class PurePursuitFollower {
     public double strafeVel = 0;
     public double lookahead = 100;
     public double prediction = 40;
-    public double rotation = 0;
     private int currentSegment = 0;
+    private double prevTime = System.nanoTime() / 1e9d;
 
     public double tolerance = 10;
 //    Degrees
@@ -62,47 +62,62 @@ public class PurePursuitFollower {
 
         RMath.Point lastPoint = lookaheadPoint;
         RMath.Point total = new Point(0, 0);
-        int num = 1;
+        double totalDistance = 0;
 
-        for (int i = currentSegment + 1; i < path.getPoints().size(); i++) {
-            RMath.Point point = path.getPoints().get(i);
-            if (Util.dist(position, point) < lookahead + prediction) {
-                total.x += (point.x + lastPoint.x) / 2;
-                total.y += (point.y + lastPoint.y) / 2;
-                num++;
-                lastPoint = point;
-            } else {
+        int num = currentSegment + 1;
+        boolean reachedStopPoint = false;
+
+        for(; num < path.size(); num++){
+            Point point = path.getPoints().get(num);
+            if(Util.dist(position, point) > lookahead + prediction) break;
+
+            final double dist = Util.dist(lastPoint, point);
+            totalDistance += dist;
+            total.x += (lastPoint.x + point.x) * dist / 2;
+            total.y += (lastPoint.y + point.y) * dist / 2;
+            lastPoint = point;
+
+            if(isStoppingPoint(point)){
+                reachedStopPoint = true;
                 break;
             }
         }
 
-        RMath.Point predictionPoint;
 
-        if (num + currentSegment - 1 >= path.getPoints().size()) {
-            predictionPoint = path.getPoints().get(path.getPoints().size() - 1);
-        } else {
-            Segment segment = path.getSegment(num + currentSegment - 1);
-            RMath.Point[] predictionIntersections = Util.getIntersection(new Circle(x, y, lookahead + prediction), segment);
-            if (predictionIntersections.length == 0)
-                return lookaheadPoint;
+        if(!reachedStopPoint){
+            RMath.Point predictionPoint;
+            Segment predictionSegment = path.getSegment(num - 1);
+            RMath.Point[] predictionIntersections = Util.getIntersection(new Circle(x, y, prediction + lookahead), predictionSegment);
 
-            predictionPoint = predictionIntersections[0];
-            for (RMath.Point p : predictionIntersections) {
+            if (predictionIntersections.length > 0) {
+
+                RMath.Point closest = predictionIntersections[0];
+                for (RMath.Point p : predictionIntersections) {
 //            Pick the point that has the least distance to the end of the segment
-                if (Util.dist(p, segment.getP2()) < Util.dist(predictionPoint, segment.getP2())) {
-                    predictionPoint = p;
+                    if (Util.dist(p, predictionSegment.getP2()) < Util.dist(closest, predictionSegment.getP2())) {
+                        closest = p;
+                    }
                 }
+
+                predictionPoint = closest;
+            }else{
+                predictionPoint = position.closestPoint(predictionSegment);
             }
+
+            final double dist = Util.dist(lastPoint, predictionPoint);
+            totalDistance += dist;
+
+            total.x += (lastPoint.x + predictionPoint.x) * dist / 2;
+            total.y += (lastPoint.y + predictionPoint.y) * dist / 2;
+            lastPoint = predictionPoint;
         }
 
-        System.out.println("Segments averaged: " + num);
+        Vector average = new Vector(total).scale(1 / totalDistance);
+        if(totalDistance == 0){
+            return lookaheadPoint;
+        }
 
-        total.x += (lastPoint.x + predictionPoint.x) / 2;
-        total.y += (lastPoint.y + predictionPoint.y) / 2;
-
-        RMath.Point followPoint = new Point(total.x / num, total.y / num);
-        System.out.println("Follow Point: " + followPoint);
-        return followPoint;
+        return average.toPoint();
     }
 
     //    This will be substituted for mecanum driving with pid in the robotics implementation
@@ -112,7 +127,17 @@ public class PurePursuitFollower {
     }
 
     public void update() {
+        RMath.Point position = new RMath.Point(x, y);
+
         //        also measure change in time here
+
+        final double currentTime = System.nanoTime() / 1e9d;
+        final double deltaTime = currentTime - prevTime;
+        prevTime = currentTime;
+
+        if(Util.dist(position, path.getPoints().get(currentSegment + 1)) < lookahead){
+            currentSegment++;
+        }
 
 //        increment currentSegment if the endpoint is completed
 //        endpoint is completed if:
@@ -120,18 +145,21 @@ public class PurePursuitFollower {
 //        robot is within lookahead
 //        robot is completed with any interrupting actions
 
-//
-
 //        get the follow point
 //        get the speed
 //        get target rotation
 //        move towards follow point at calculated speed
 
+        RMath.Point followPoint = getFollowPoint();
+        followPoint(followPoint, 100);
+
 //        change position based on forward and strafe velocities
         Vector local = Vector.rect(strafeVel, forwardVel);
-        Vector global = local.clone();
-//        global.setTheta();
-
+        Vector global = local.clone().setTheta(local.getTheta() - Math.toRadians(rot));
+//        System.out.println(Math.toDegrees(local.getTheta() - Math.toRadians(rot)));
+        Vector deltaPos = global.clone().scale(deltaTime);
+        x += deltaPos.getX();
+        y += deltaPos.getY();
     }
 
     public void manageActions(){
@@ -166,7 +194,15 @@ public class PurePursuitFollower {
     }
 
     public void followPoint(RMath.Point point, double speed){
+        Vector direction = new Vector(point).subtract(Vector.rect(x, y)).normalize();
+        Vector localDirection = direction.clone().setTheta(direction.getTheta() + Math.toRadians(rot));
 
+//        System.out.println(Math.toDegrees(direction.getTheta()));
+//        System.out.println(direction.getMagnitude());
+//        System.out.println(localDirection.getMagnitude());
+
+        forwardVel = direction.getY() * speed;
+        strafeVel  = direction.getX() * speed;
     }
 
     public double getSpeed(){
@@ -175,23 +211,20 @@ public class PurePursuitFollower {
 
     public boolean isStoppingPoint(Point p){
 
-        boolean needsRotation = p.rot != null && Math.abs(getAngleDiff(p.rot, rotation)) >= rotationTolerance;
-        boolean needsAction = false;
+        if (p.rot != null && Math.abs(getAngleDiff(p.rot, rot)) >= rotationTolerance) return true;
+        if (path.getPoints().indexOf(p) == path.size() - 1) return true;
 
         for(Action a : p.actions) {
             if (a.interrupting){
-                needsAction = true;
-                break;
+                return true;
             }
         }
 
-        return needsRotation || needsAction;
+        return false;
     }
 
     public void draw(GraphicsContext gc) {
         double robowidth = 50;
-        //temp
-        double rot = 0;
 //        call gc functions here
 //        square should point in direction of rotation of bot
 
@@ -203,13 +236,16 @@ public class PurePursuitFollower {
         gc.rotate(rot);
         gc.setStroke(Color.BLUE);
         gc.strokeRect(0 - robowidth / 2, 0 - robowidth / 2, robowidth, robowidth);
+
+        gc.strokeLine(0, 0, robowidth / 2, 0);
+
         gc.setStroke(Color.RED);
         gc.strokeOval(0 - lookahead, 0 - lookahead, lookahead * 2, lookahead * 2);
         gc.setStroke(Color.CYAN);
         gc.strokeOval(0 - (prediction + lookahead), 0 - (prediction + lookahead), (prediction + lookahead) * 2, (prediction + lookahead) * 2);
         gc.restore();
 
-        gc.setFill(Color.GREEN);
+        gc.setFill(Color.LIMEGREEN);
         RMath.Point followPoint = getFollowPoint();
         gc.fillOval(followPoint.x - 5, followPoint.y - 5, 10, 10);
     }
@@ -236,12 +272,12 @@ public class PurePursuitFollower {
     }
 
     public static class Point extends RMath.Point {
-        Double speed;
-        Double turnSpeed;
-        Double lookahead;
-        Double prediction;
-        Double rot;
-        Double rotationTolerance;
+        public Double speed;
+        public Double turnSpeed;
+        public Double lookahead;
+        public Double prediction;
+        public Double rot;
+        public Double rotationTolerance;
 
         List<Action> actions = new ArrayList<>();
 

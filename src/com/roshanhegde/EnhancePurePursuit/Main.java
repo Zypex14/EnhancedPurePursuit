@@ -9,8 +9,12 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main extends Application {
 
@@ -20,6 +24,7 @@ public class Main extends Application {
     private Path<PurePursuitFollower.Point> path;
     private PurePursuitFollower robot;
     private Point mousePos = new Point(0, 0);
+    private List<Point> trail = new ArrayList<>();
    // private PurePursuitFollower bot = new PurePursuitFollower();
 
     @Override
@@ -36,9 +41,7 @@ public class Main extends Application {
         mainLoop.setCycleCount(Timeline.INDEFINITE);
 
         KeyFrame kf = new KeyFrame(Duration.seconds(1d / 60),
-                (ActionEvent event) -> {
-                    onUpdate();
-                }
+                (ActionEvent event) -> onUpdate()
         );
 
 
@@ -70,11 +73,19 @@ public class Main extends Application {
                 .addAction(() -> System.out.println("testing"))
                 .setInterrupting(true)
                 .setRotationTolerance(10d);
-        path.addPoint(100, 500);
+        path.addPoint(200, 500);
+        path.addPoint(100, 300);
+        path.addPoint(100, 200);
+        path.addPoint(500, 200);
 
         robot = new PurePursuitFollower();
         robot.lookahead = 50;
         robot.followPath(path);
+
+//        robot.x = 300;
+//        robot.y = 300;
+//        robot.forwardVel = 20;
+//        robot.rot = 45;
 
     }
 
@@ -82,13 +93,24 @@ public class Main extends Application {
         final double w = gc.getCanvas().getWidth();
         final double h = gc.getCanvas().getHeight();
 
-//        gc.clearRect(0, 0, w, h);
+        gc.clearRect(0, 0, w, h);
+        robot.update();
+        trail.add(new Point(robot.x, robot.y));
 
         path.draw(gc);
+
+        gc.setStroke(Color.LIMEGREEN);
+        gc.beginPath();
+        gc.moveTo(trail.get(0).x, trail.get(0).y);
+        for(Point p : trail) gc.lineTo(p.x, p.y);
+        gc.stroke();
+        gc.closePath();
+        gc.setStroke(Color.BLACK);
+
         robot.draw(gc);
 
-        robot.x = mousePos.x;
-        robot.y = mousePos.y;
+//        robot.x = mousePos.x;
+//        robot.y = mousePos.y;
     }
 
     public static void main(String[] args) {
