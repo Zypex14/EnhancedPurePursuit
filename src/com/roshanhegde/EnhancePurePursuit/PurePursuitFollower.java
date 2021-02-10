@@ -135,9 +135,11 @@ public class PurePursuitFollower {
         final double deltaTime = currentTime - prevTime;
         prevTime = currentTime;
 
-        if(Util.dist(position, path.getPoints().get(currentSegment + 1)) < lookahead){
+        if(Util.dist(position, path.getPoints().get(currentSegment + 1)) < lookahead && currentSegment < path.size() - 2){
             currentSegment++;
         }
+
+        manageActions();
 
 //        increment currentSegment if the endpoint is completed
 //        endpoint is completed if:
@@ -151,7 +153,7 @@ public class PurePursuitFollower {
 //        move towards follow point at calculated speed
 
         RMath.Point followPoint = getFollowPoint();
-        followPoint(followPoint, 100);
+        followPoint(followPoint, 50);
 
 //        change position based on forward and strafe velocities
         Vector local = Vector.rect(strafeVel, forwardVel);
@@ -164,6 +166,7 @@ public class PurePursuitFollower {
 
     public void manageActions(){
         Point nextPoint = path.getPoints().get(currentSegment + 1);
+        if(nextPoint.actions.isEmpty()) return;
         Action action = nextPoint.actions.get(0);
         RMath.Point position = new RMath.Point(x, y);
 
@@ -316,7 +319,9 @@ public class PurePursuitFollower {
         }
 
         public Action addAction(Runnable r) {
-            return new Action(r, this);
+            Action a = new Action(r, this);
+            actions.add(a);
+            return a;
         }
 
     }

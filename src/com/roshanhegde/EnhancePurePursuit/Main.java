@@ -71,19 +71,22 @@ public class Main extends Application {
         path.addPoint(300, 100).setSpeed(4d);
         path.addPoint(500, 300)
                 .addAction(() -> System.out.println("testing"))
-                .setInterrupting(true)
-                .setRotationTolerance(10d);
+                .setInterrupting(true);
         path.addPoint(200, 500);
         path.addPoint(100, 300);
         path.addPoint(100, 200);
-        path.addPoint(500, 200);
+        path.addPoint(300, 200);
+        path.addPoint(300, 400);
+        path.addPoint(500, 400);
+        path.addPoint(300, 50);
 
         robot = new PurePursuitFollower();
-        robot.lookahead = 50;
+        robot.lookahead = 70;
+        robot.prediction = -40;
         robot.followPath(path);
 
-//        robot.x = 300;
-//        robot.y = 300;
+        robot.x = 100;
+        robot.y = 300;
 //        robot.forwardVel = 20;
 //        robot.rot = 45;
 
